@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Journey Together</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rose: #d4616e;
+            --deep-rose: #a84855;
+            --cream: #f9f5f0;
+            --warm-gray: #8b7e74;
+            --dark: #2a2522;
+            --gold: #c9a961;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #f0e8de 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5em;
+            font-weight: 400;
+            color: var(--deep-rose);
+            text-align: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInDown 1s ease forwards;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: var(--warm-gray);
+            text-align: center;
+            margin-bottom: 50px;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeInDown 1s ease 0.3s forwards;
+        }
+
+        /* Puzzle 1: Image Selection */
+        #puzzle1 {
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.6s forwards;
+        }
+
+        .instructions {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            text-align: center;
+            border: 2px solid var(--rose);
+        }
+
+        .instructions p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: var(--dark);
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .image-item {
+            aspect-ratio: 1;
+            background: var(--cream);
+            border: 3px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(212, 97, 110, 0.3);
+        }
+
+        .image-item.selected {
+            border-color: var(--rose);
+            background: var(--rose);
+            color: white;
+        }
+
+        .image-item.correct {
+            border-color: var(--gold);
+            background: var(--gold);
+            animation: pulse 0.5s ease;
+        }
+
+        .selection-area {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 2px dashed var(--warm-gray);
+        }
+
+        .selection-title {
+            font-size: 1.3em;
+            color: var(--deep-rose);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .selected-items {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 150px;
+            flex-wrap: wrap;
+        }
+
+        .selected-slot {
+            width: 120px;
+            height: 120px;
+            border: 3px dashed var(--warm-gray);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            background: var(--cream);
+            transition: all 0.3s ease;
+        }
+
+        .selected-slot.filled {
+            border-style: solid;
+            border-color: var(--rose);
+            background: white;
+            cursor: pointer;
+        }
+
+        .selected-slot.filled:hover {
+            transform: scale(1.05);
+        }
+
+        .date-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: var(--dark);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .check-button {
+            margin-top: 30px;
+            padding: 15px 50px;
+            background: var(--rose);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-family: 'Playfair Display', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 15px rgba(212, 97, 110, 0.3);
+        }
+
+        .check-button:hover {
+            background: var(--deep-rose);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 97, 110, 0.4);
+        }
+
+        .check-button:disabled {
+            background: var(--warm-gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Puzzle 2: Sliding Puzzle */
+        #puzzle2 {
+            display: none;
+            width: 100%;
+            opacity: 0;
+        }
+
+        #puzzle2.active {
+            display: block;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .puzzle-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: inline-block;
+        }
+
+        .sliding-puzzle {
+            display: grid;
+            grid-template-columns: repeat(3, 150px);
+            grid-template-rows: repeat(3, 150px);
+            gap: 5px;
+            background: var(--warm-gray);
+            padding: 5px;
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+
+        .puzzle-tile {
+            background-size: 450px 450px;
+            background-color: var(--cream);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            border: 2px solid white;
+        }
+
+        .puzzle-tile:hover:not(.empty) {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .puzzle-tile.empty {
+            background: var(--dark);
+            cursor: default;
+            opacity: 0.3;
+        }
+
+        .moves-counter {
+            text-align: center;
+            font-size: 1.3em;
+            color: var(--warm-gray);
+            margin-top: 20px;
+        }
+
+        /* Puzzle 3: Hidden Message */
+        #puzzle3 {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: var(--cream);
+            opacity: 0;
+        }
+
+        #puzzle3.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 2s ease forwards;
+        }
+
+        .heart-container {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 3s ease 1s forwards;
+        }
+
+        .animated-heart {
+            font-size: 10em;
+            color: var(--rose);
+            animation: heartbeat 1.5s ease infinite;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            10%, 30% {
+                transform: scale(1.1);
+            }
+            20%, 40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            box-shadow: 0 4px 20px rgba(201, 169, 97, 0.4);
+            animation: slideIn 0.5s ease;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Puzzle 1: Image Selection -->
+        <div id="puzzle1">
+            <h1>He can code?</h1>
+            <p class="subtitle">Figure it out</p>
+            
+            <div class="instructions">
+                <p>Chronilogical order is the only clue </p>
+            </div>
+
+            <div class="image-grid" id="imageGrid">
+                <!-- Items will be populated by JavaScript -->
+            </div>
+
+            <div class="selection-area">
+                <div class="selection-title"> 😈 (1st to 4th, start to finish)</div>
+                <div class="selected-items" id="selectedItems">
+                    <div class="selected-slot" data-position="0">
+                        <div class="date-label"> </div>
+                    </div>
+                    <div class="selected-slot" data-position="1">
+                        <div class="date-label"> </div>
+                    </div>
+                    <div class="selected-slot" data-position="2">
+                        <div class="date-label"> </div>
+                    </div>
+                    <div class="selected-slot" data-position="3">
+                        <div class="date-label"> </div>
+                    </div>
+                </div>
+                <button class="check-button" id="checkButton" disabled>Check Answer</button>
+            </div>
+        </div>
+
+        <!-- Puzzle 2: Sliding Puzzle -->
+        <div id="puzzle2">
+            <h1>I just wanted to see if I could make this</h1>
+            <p class="subtitle">Piece it together</p>
+            
+            <div class="puzzle-container">
+                <div class="sliding-puzzle" id="slidingPuzzle">
+                    <!-- Tiles will be generated by JavaScript -->
+                </div>
+                <div class="moves-counter">Moves: <span id="movesCount">0</span></div>
+            </div>
+        </div>
+
+        <!-- Puzzle 3: Hidden Message -->
+        <div id="puzzle3">
+            <div class="heart-container">
+                <div class="animated-heart">❤</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== PUZZLE 1: IMAGE SELECTION ====================
+        
+        // YOU NEED TO CUSTOMIZE THIS ARRAY
+        // Replace these emojis with items/symbols that represent your actual dates
+        // The first 4 items should be the CORRECT answers in chronological order
+        // The remaining items are decoys
+        const dateItems = [
+            { emoji: '♟️', id: 1, isCorrect: true, order: 0 },  // Date 1 - REPLACE
+            { emoji: '🥒', id: 2, isCorrect: true, order: 1 },  // Date 2 - REPLACE
+            { emoji: '🚭', id: 3, isCorrect: true, order: 2 },  // Date 3 - REPLACE
+            { emoji: '👨‍🍳', id: 4, isCorrect: true, order: 3 },  // Date 4 - REPLACE
+            // Decoys below - you can add more or change these
+            { emoji: '🎄', id: 5, isCorrect: false },
+            { emoji: '🎮', id: 6, isCorrect: false },
+            { emoji: '🍷', id: 7, isCorrect: false },
+            { emoji: '🍣', id: 8, isCorrect: false },
+            { emoji: '🎯', id: 9, isCorrect: false },
+            { emoji: '🎲', id: 10, isCorrect: false },
+            { emoji: '🎺', id: 11, isCorrect: false },
+            { emoji: '😶‍🌫️', id: 12, isCorrect: false },
+            { emoji: '🎥', id: 13, isCorrect: false },
+            { emoji: '🎨', id: 14, isCorrect: false },
+            { emoji: '🎾', id: 15, isCorrect: false },
+            { emoji: '😚', id: 16, isCorrect: false },
+        ];
+
+        const selectedItems = [null, null, null, null];
+        let currentSelectingSlot = 0;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function initPuzzle1() {
+            const imageGrid = document.getElementById('imageGrid');
+            const shuffledItems = shuffleArray(dateItems);
+            
+            shuffledItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'image-item';
+                div.textContent = item.emoji;
+                div.dataset.id = item.id;
+                div.dataset.isCorrect = item.isCorrect;
+                div.dataset.order = item.order !== undefined ? item.order : -1;
+                
+                div.addEventListener('click', () => selectItem(div, item));
+                imageGrid.appendChild(div);
+            });
+
+            // Setup slot click handlers for deselection
+            document.querySelectorAll('.selected-slot').forEach(slot => {
+                slot.addEventListener('click', () => {
+                    const position = parseInt(slot.dataset.position);
+                    if (selectedItems[position]) {
+                        deselectItem(position);
+                    }
+                });
+            });
+
+            document.getElementById('checkButton').addEventListener('click', checkPuzzle1Answer);
+        }
+
+        function selectItem(element, item) {
+            if (element.classList.contains('selected')) return;
+            
+            // Find next empty slot
+            const emptySlotIndex = selectedItems.findIndex(item => item === null);
+            if (emptySlotIndex === -1) return;
+            
+            selectedItems[emptySlotIndex] = item;
+            element.classList.add('selected');
+            
+            // Update slot display
+            const slot = document.querySelector(`.selected-slot[data-position="${emptySlotIndex}"]`);
+            slot.textContent = item.emoji;
+            slot.classList.add('filled');
+            const label = document.createElement('div');
+            label.className = 'date-label';
+            label.textContent = `Date ${emptySlotIndex + 1}`;
+            slot.appendChild(label);
+            
+            // Enable check button if all slots filled
+            if (selectedItems.every(item => item !== null)) {
+                document.getElementById('checkButton').disabled = false;
+            }
+        }
+
+        function deselectItem(position) {
+            const item = selectedItems[position];
+            if (!item) return;
+            
+            selectedItems[position] = null;
+            
+            // Remove from slot
+            const slot = document.querySelector(`.selected-slot[data-position="${position}"]`);
+            slot.textContent = '';
+            slot.classList.remove('filled');
+            const label = document.createElement('div');
+            label.className = 'date-label';
+            label.textContent = `Date ${position + 1}`;
+            slot.appendChild(label);
+            
+            // Deselect in grid
+            const gridItem = document.querySelector(`.image-item[data-id="${item.id}"]`);
+            if (gridItem) {
+                gridItem.classList.remove('selected');
+            }
+            
+            document.getElementById('checkButton').disabled = true;
+        }
+
+        function checkPuzzle1Answer() {
+            const isCorrect = selectedItems.every((item, index) => {
+                return item && item.isCorrect && item.order === index;
+            });
+
+            if (isCorrect) {
+                // Show success
+                const slots = document.querySelectorAll('.selected-slot');
+                slots.forEach(slot => slot.classList.add('correct'));
+                
+                const successMsg = document.createElement('div');
+                successMsg.className = 'success-message';
+                successMsg.textContent = 'I guess you do remember 🧐...';
+                document.body.appendChild(successMsg);
+                
+                setTimeout(() => {
+                    document.getElementById('puzzle1').style.display = 'none';
+                    document.getElementById('puzzle2').classList.add('active');
+                    initPuzzle2();
+                }, 2000);
+            } else {
+                alert('Not quite right 💭');
+            }
+        }
+
+        // ==================== PUZZLE 2: SLIDING PUZZLE ====================
+        
+        
+     
+        let tilePositions = []; 
+        let emptyPosition = 8;  
+        let moves = 0;
+        let puzzleImageUrl = ''; 
+
+        function initPuzzle2() {
+            puzzleImageUrl = 'https://i.imgur.com/qgJ6iDj.jpeg'; // REPLACE THIS WITH YOUR IMGUR DIRECT LINK
+            
+            const puzzleGrid = document.getElementById('slidingPuzzle');
+            puzzleGrid.innerHTML = ''; 
+            
+          
+            tilePositions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            
+            for (let gridPos = 0; gridPos < 9; gridPos++) {
+                const tile = document.createElement('div');
+                tile.className = 'puzzle-tile';
+                tile.dataset.gridPosition = gridPos; 
+                
+                tile.addEventListener('click', () => handleTileClick(gridPos));
+                puzzleGrid.appendChild(tile);
+            }
+            
+            shufflePuzzle2();
+            
+            renderPuzzle(puzzleImageUrl);
+        }
+
+       
+        function renderPuzzle(imageUrl) {
+            const tiles = document.querySelectorAll('.puzzle-tile');
+            
+            tiles.forEach((tile, gridPos) => {
+                const tileNumber = tilePositions[gridPos]; // Which tile is here?
+                
+                if (tileNumber === 8) {
+                    tile.classList.add('empty');
+                    tile.style.backgroundImage = 'none';
+                } else {
+                    tile.classList.remove('empty');
+                    tile.style.backgroundImage = `url(${imageUrl})`;
+                    
+                
+                    const correctRow = Math.floor(tileNumber / 3);
+                    const correctCol = tileNumber % 3;
+                    tile.style.backgroundPosition = `-${correctCol * 150}px -${correctRow * 150}px`;
+                }
+            });
+        }
+
+      
+        function shufflePuzzle2() {
+            for (let i = 0; i < 200; i++) {
+                const validMoves = getValidMoves(emptyPosition);
+                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                makeMove(randomMove, false); 
+            }
+            moves = 0;
+            document.getElementById('movesCount').textContent = '0';
+        }
+
+        
+        function getValidMoves(emptyPos) {
+            const valid = [];
+            const row = Math.floor(emptyPos / 3);
+            const col = emptyPos % 3;
+            
+            if (row > 0) valid.push(emptyPos - 3); // Tile above can move down
+            if (row < 2) valid.push(emptyPos + 3); // Tile below can move up
+            if (col > 0) valid.push(emptyPos - 1); // Tile to left can move right
+            if (col < 2) valid.push(emptyPos + 1); // Tile to right can move left
+            
+            return valid;
+        }
+
+        function handleTileClick(gridPos) {
+            const validMoves = getValidMoves(emptyPosition);
+            
+            if (validMoves.includes(gridPos)) {
+                makeMove(gridPos, true); // true = count this move
+                
+                renderPuzzle(puzzleImageUrl);
+                
+                if (isPuzzleSolved()) {
+                    setTimeout(() => {
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'success-message';
+                        successMsg.textContent = 'Daayyyum we cute 🤤';
+                        document.body.appendChild(successMsg);
+                        
+                        setTimeout(() => {
+                            document.getElementById('puzzle2').style.display = 'none';
+                            document.getElementById('puzzle3').classList.add('active');
+                        }, 2000);
+                    }, 500);
+                }
+            }
+        }
+
+       
+        function makeMove(clickedPos, countMove) {
+            [tilePositions[clickedPos], tilePositions[emptyPosition]] = 
+            [tilePositions[emptyPosition], tilePositions[clickedPos]];
+            
+            emptyPosition = clickedPos;
+            
+            if (countMove) {
+                moves++;
+                document.getElementById('movesCount').textContent = moves;
+            }
+        }
+
+        function isPuzzleSolved() {
+            for (let i = 0; i < 9; i++) {
+                if (tilePositions[i] !== i) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Initialize puzzle 1 on load
+        initPuzzle1();
+    </script>
+
+    <!-- 
+        ❤️ What up shawty! If you're reading this, I guess you can code ❤️
+        
+        For real though, Will you be my Valentine? 💕
+        
+        Every line of code I (Claude) wrote for this was filled with thoughts of you.
+	My eyes hurt just trying to customize this code and you do this at an 
+	exponential level. NERD. 
+        
+        So what do you say? Will you debug life with me?
+        
+        - Varun (another Patel)
+        
+    -->
+</body>
+</html>
